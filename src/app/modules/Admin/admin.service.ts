@@ -1,11 +1,12 @@
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
 const getAllAdmins = async (params: any) => {
-  console.log(params.searchTerm);
-  const result = await prisma.admin.findMany({
-    where: {
+  const andConditions: Prisma.AdminWhereInput[] = [];
+
+  if (params.searchTerm) {
+    andConditions.push({
       OR: [
         {
           name: {
@@ -20,7 +21,11 @@ const getAllAdmins = async (params: any) => {
           },
         },
       ],
-    },
+    });
+  }
+  const whereConditions = { AND: andConditions };
+  const result = await prisma.admin.findMany({
+    where: whereConditions,
   });
   return result;
 };
