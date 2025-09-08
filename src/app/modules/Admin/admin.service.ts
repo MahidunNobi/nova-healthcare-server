@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { Admin, Prisma } from "@prisma/client";
 import { searchAbleFieldsForSearchTerm } from "./admin.constants";
 import paginationHelper from "../../../shared/paginationHelper";
 import prisma from "../../../shared/prismaClient";
@@ -60,7 +60,18 @@ const getAdminById = async (id: string) => {
   return result;
 };
 
+const updateAdminById = async (id: string, data: Partial<Admin>) => {
+  const result = await prisma.admin.update({
+    where: {
+      id,
+    },
+    data,
+  });
+  return result;
+};
+
 export const adminServices = {
   getAllAdmins,
   getAdminById,
+  updateAdminById,
 };
