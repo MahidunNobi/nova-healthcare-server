@@ -70,8 +70,26 @@ const updateAdminById = async (id: string, data: Partial<Admin>) => {
   return result;
 };
 
+const deleteAdminById = async (id: string) => {
+  const result = await prisma.$transaction(async (tc) => {
+    const deleteAdmin = await tc.admin.delete({
+      where: {
+        id,
+      },
+    });
+    const deleteUser = await tc.user.delete({
+      where: {
+        email: deleteAdmin.email,
+      },
+    });
+    return deleteAdmin;
+  });
+  return result;
+};
+
 export const adminServices = {
   getAllAdmins,
   getAdminById,
   updateAdminById,
+  deleteAdminById,
 };
