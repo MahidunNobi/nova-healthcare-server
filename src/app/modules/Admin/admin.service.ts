@@ -1,37 +1,13 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { searchAbleFieldsForSearchTerm } from "./admin.constants";
-
-const prisma = new PrismaClient();
-
-const calculateQueryOptions = (options: {
-  page?: number;
-  limit?: number;
-  sortBy?: string;
-  sortOrder?: string;
-}) => {
-  const page = Number(options.page) || 1;
-  const limit = Number(options.limit) || 50;
-  const skip = (page - 1) * limit;
-
-  const sortBy = options.sortBy || "createdAt";
-  const sortOrder = options.sortOrder || "desc";
-
-  return {
-    page,
-    limit,
-    skip,
-    sortBy,
-    sortOrder,
-  };
-};
+import paginationHelper from "../../../shared/paginationHelper";
+import prisma from "../../../shared/prismaClient";
 
 const getAllAdmins = async (params: any, options: any) => {
   const andConditions: Prisma.AdminWhereInput[] = [];
-  console.log(options);
   const { searchTerm, ...filterData } = params;
-  const { limit, skip, sortBy, sortOrder } = calculateQueryOptions(options);
+  const { limit, skip, sortBy, sortOrder } = paginationHelper(options);
 
-  console.log({ sortBy, sortOrder });
   if (params.searchTerm) {
     andConditions.push({
       OR: searchAbleFieldsForSearchTerm.map((field) => ({
@@ -54,7 +30,6 @@ const getAllAdmins = async (params: any, options: any) => {
   }
   const whereConditions = { AND: andConditions };
 
-  // console.dir(whereConditions, { depth: "infinify" });/
   const result = await prisma.admin.findMany({
     where: whereConditions,
     skip,
