@@ -1,9 +1,29 @@
 import { Request, Response } from "express";
 import { adminServices } from "./admin.service";
 
+const pick = (obj, keys) => {
+  const filter = {};
+
+  for (const key of keys) {
+    if (obj && Object.hasOwn(obj, key)) {
+      filter[key] = obj[key];
+    }
+  }
+  return filter;
+};
+
 const getAllAdmins = async (req: Request, res: Response) => {
   try {
-    const result = await adminServices.getAllAdmins(req.query);
+    const filter = pick(req.query, [
+      "name",
+      "email",
+      "searchTerm",
+      "contactNumber",
+    ]);
+    console.log(filter);
+
+    const result = await adminServices.getAllAdmins(filter);
+
     res.status(200).json({
       success: true,
       message: "Retrived admins successfully!",

@@ -28,7 +28,7 @@ const getAllAdmins = async (params: any) => {
     });
   }
   const whereConditions = { AND: andConditions };
-  console.dir(whereConditions, { depth: "infinify" });
+  // console.dir(whereConditions, { depth: "infinify" });/
   const result = await prisma.admin.findMany({
     where: whereConditions,
   });
