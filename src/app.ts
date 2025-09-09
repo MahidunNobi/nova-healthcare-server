@@ -4,6 +4,7 @@ import { UserRoutes } from "./app/modules/Users/user.routes";
 import { adminRoutes } from "./app/modules/Admin/admin.routes";
 import router from "./app/Routes";
 import globalErrorHandler from "./app/middlewares/globalErrorHandler";
+import cookieParser from "cookie-parser";
 
 const app = express();
 
@@ -12,6 +13,7 @@ app.use(cors());
 //parser
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 app.get("/", (req: Request, res: Response) => {
   res.send(" Nova Health Care Server .......");

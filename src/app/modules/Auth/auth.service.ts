@@ -41,6 +41,34 @@ const userLogin = async (payload: { email: string; password: string }) => {
   };
 };
 
+const refreshToken = async (token: string) => {
+  let decodedData;
+  try {
+    decodedData = jwt.verify(token, process.env.JWT_SECRET!);
+  } catch (error) {
+    throw new Error("You are not authorized");
+  }
+  const isUserExists = await prisma.user.findUniqueOrThrow({
+    where: {
+      email: decodedData.email,
+    },
+  });
+
+  const accessToken = jwtHelpers.generateToken(
+    {
+      email: isUserExists.email,
+      role: isUserExists.role,
+    },
+    "15min"
+  );
+
+  return {
+    accessToken,
+    needPasswordChange: isUserExists.needPasswordChange,
+  };
+};
+
 export const authServices = {
   userLogin,
+  refreshToken,
 };
