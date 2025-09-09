@@ -1,15 +1,21 @@
-import { NextFunction, Request, Response } from "express";
+import { NextFunction, Request, RequestHandler, Response } from "express";
 import { adminServices } from "./admin.service";
 import pick from "../../../shared/pick";
 import { filterableFields } from "./admin.constants";
 import sendResponse from "../../../shared/sendResponse";
 
-const getAllAdmins = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
+const catchAsync = (fn: RequestHandler) => {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      await fn(req, res, next);
+    } catch (error) {
+      next(error);
+    }
+  };
+};
+
+const getAllAdmins = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
     const filter = req.query && pick(req.query, filterableFields);
     const options =
       req.query && pick(req.query, ["page", "limit", "sortBy", "sortOrder"]);
@@ -23,18 +29,11 @@ const getAllAdmins = async (
       meta: result.meta,
       data: result.data,
     });
-  } catch (error) {
-    console.log(error);
-    next(error);
   }
-};
+);
 
-const getAdminById = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
+const getAdminById = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
     const id = req.params.id!;
     const result = await adminServices.getAdminById(id);
 
@@ -44,18 +43,11 @@ const getAdminById = async (
       message: "Retrived admin successfully!",
       data: result,
     });
-  } catch (error) {
-    console.log(error);
-    next(error);
   }
-};
+);
 
-const updateAdminById = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
+const updateAdminById = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
     const id = req.params.id!;
     const body = req.body;
     const result = await adminServices.updateAdminById(id, body);
@@ -66,17 +58,11 @@ const updateAdminById = async (
       message: "Admin Updated successfully!",
       data: result,
     });
-  } catch (error) {
-    console.log(error);
-    next(error);
   }
-};
-const deleteAdminById = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
+);
+
+const deleteAdminById = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
     const id = req.params.id!;
     const result = await adminServices.deleteAdminById(id);
 
@@ -86,18 +72,11 @@ const deleteAdminById = async (
       message: "Admin Deleted successfully!",
       data: result,
     });
-  } catch (error) {
-    console.log(error);
-    next(error);
   }
-};
+);
 
-const softDeleteAdminById = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
+const softDeleteAdminById = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
     const id = req.params.id!;
     const result = await adminServices.softDeleteAdmin(id);
 
@@ -107,11 +86,8 @@ const softDeleteAdminById = async (
       message: "Admin Deleted successfully!",
       data: result,
     });
-  } catch (error) {
-    console.log(error);
-    next(error);
   }
-};
+);
 
 export const adminController = {
   getAllAdmins,
