@@ -1,9 +1,4 @@
-type IOptions = {
-  page?: number;
-  limit?: number;
-  sortBy?: string;
-  sortOrder?: string;
-};
+import { IPagination } from "../app/interfaces/pagination";
 
 type IResults = {
   page: number;
@@ -13,7 +8,7 @@ type IResults = {
   sortOrder: string;
 };
 
-const paginationHelper = (options: IOptions): IResults => {
+const paginationHelper = (options: IPagination): IResults => {
   const page = Number(options.page) || 1;
   const limit = Number(options.limit) || 50;
   const skip = (page - 1) * limit;
