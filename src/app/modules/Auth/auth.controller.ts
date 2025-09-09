@@ -5,12 +5,17 @@ import sendResponse from "../../../shared/sendResponse";
 
 const userLogin = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const result = await authServices.userLogin();
+    const result = await authServices.userLogin(req.body);
+
+    res.cookie("refreshToken", result.refreshToken);
     sendResponse(res, {
       statusCode: 200,
       success: true,
       message: "User Logged in successfully",
-      data: result,
+      data: {
+        accessToken: result.accessToken,
+        needPasswordChange: result.needPasswordChange,
+      },
     });
   }
 );
