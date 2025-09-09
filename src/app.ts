@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import cors from "cors";
 import { UserRoutes } from "./app/modules/Users/user.routes";
 import { adminRoutes } from "./app/modules/Admin/admin.routes";
+import router from "./app/Routes";
 
 const app = express();
 
@@ -15,7 +16,6 @@ app.get("/", (req: Request, res: Response) => {
   res.send(" Nova Health Care Server .......");
 });
 
-app.use("/api/v1/user", UserRoutes);
-app.use("/api/v1/admin", adminRoutes);
+app.use("/api/v1", router);
 
 export default app;
