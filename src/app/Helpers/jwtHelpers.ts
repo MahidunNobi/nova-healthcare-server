@@ -1,7 +1,8 @@
-import jwt from "jsonwebtoken";
+import jwt, { Secret } from "jsonwebtoken";
+import config from "../../config";
 
 const generateToken = (payload: any, expiresIn: string) => {
-  const token = jwt.sign(payload, process.env.JWT_SECRET!, {
+  const token = jwt.sign(payload, config.jwt.jwt_secret as Secret, {
     algorithm: "HS256",
     expiresIn,
   });
