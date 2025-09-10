@@ -14,7 +14,9 @@ const auth = (...roles: string[]) => {
       token,
       config.jwt.jwt_secret as Secret
     ) as JwtPayload;
+
     if (roles.includes(decodedData.role)) {
+      req.user = decodedData;
       next();
     } else {
       throw new ApiError(400, "You are not authorized");
