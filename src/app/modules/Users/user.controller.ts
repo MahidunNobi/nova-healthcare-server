@@ -20,7 +20,7 @@ const createAdmin = async (req: Request, res: Response) => {
 };
 
 const createDoctor = catchAsync(async (req: Request, res: Response) => {
-  const result = await userServices.createDoctor();
+  const result = await userServices.createDoctor(req);
   res.status(200).json({
     success: true,
     message: "Doctor Created Successfully!",
