@@ -27,7 +27,7 @@ const userLogin = async (payload: { email: string; password: string }) => {
       email: user.email,
       role: user.role,
     },
-    "15min"
+    "1d"
   );
 
   const refreshToken = jwtHelpers.generateToken(
