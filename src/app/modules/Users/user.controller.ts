@@ -1,6 +1,9 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { userServices } from "./user.service";
 import catchAsync from "../../../shared/catchAsync";
+import pick from "../../../shared/pick";
+import { patientFilterableFields } from "./user.constants";
+import sendResponse from "../../../shared/sendResponse";
 
 const createAdmin = async (req: Request, res: Response) => {
   try {
@@ -36,8 +39,26 @@ const createPatient = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getAllUsers = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const filter = req.query && pick(req.query, patientFilterableFields);
+    const options = pick(req.query, ["page", "limit", "sortBy", "sortOrder"]);
+
+    const result = await userServices.getAllUsers(filter, options);
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Retrived admins successfully!",
+      meta: result.meta,
+      data: result.data,
+    });
+  }
+);
+
 export const userController = {
   createAdmin,
   createDoctor,
   createPatient,
+  getAllUsers,
 };
