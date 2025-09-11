@@ -2,12 +2,15 @@ import { UserRole } from "@prisma/client";
 import bcrypt from "bcrypt";
 import prisma from "../../../shared/prismaClient";
 import { fileUploader } from "../../Helpers/fileUploader";
+import { ICloudinaryResponse } from "../../interfaces/file";
+import { UploadApiResponse } from "cloudinary";
 
 const createAdmin = async (req: any) => {
   const file = req.file;
   if (file) {
-    const cloudinaryUploadsData = await fileUploader.uploadToCloudinary(file);
-    req.body.admin.profilePhoto = cloudinaryUploadsData.secure_url;
+    const cloudinaryUploadsData: void | UploadApiResponse =
+      await fileUploader.uploadToCloudinary(file);
+    req.body.admin.profilePhoto = cloudinaryUploadsData?.secure_url;
   }
 
   const data = req.body;

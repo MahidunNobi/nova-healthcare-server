@@ -2,6 +2,7 @@ import multer from "multer";
 import path from "path";
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
+import { IFileType } from "../interfaces/file";
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -14,7 +15,7 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-async function uploadToCloudinary(file: any) {
+async function uploadToCloudinary(file: IFileType) {
   // Configuration
   cloudinary.config({
     cloud_name: "dlnxfhlfl",
