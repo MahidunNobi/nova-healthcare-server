@@ -105,11 +105,10 @@ const createPatient = async (req: Request) => {
 };
 
 const getAllUsers = async (params: any, options: IPagination) => {
-  console.log(options);
   const andConditions: Prisma.UserWhereInput[] = [];
   const { searchTerm, ...filterData } = params;
   const { page, limit, skip, sortBy, sortOrder } = paginationHelper(options);
-
+  console.log(params);
   if (params.searchTerm) {
     andConditions.push({
       OR: UserSearchableFieldsForSearchTerm.map((field) => ({
