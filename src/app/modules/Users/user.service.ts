@@ -2,7 +2,6 @@ import { UserRole } from "@prisma/client";
 import bcrypt from "bcrypt";
 import prisma from "../../../shared/prismaClient";
 import { fileUploader } from "../../Helpers/fileUploader";
-import { ICloudinaryResponse } from "../../interfaces/file";
 import { UploadApiResponse } from "cloudinary";
 import { Request } from "express";
 
@@ -70,7 +69,40 @@ const createDoctor = async (req: Request) => {
   return result;
 };
 
+const createPatient = async (req: Request) => {
+  const file = req.file;
+  if (file) {
+    const cloudinaryUploadsData: void | UploadApiResponse =
+      await fileUploader.uploadToCloudinary(file);
+    req.body.patient.profilePhoto = cloudinaryUploadsData?.secure_url;
+  }
+
+  const data = req.body;
+
+  const hashedPassword = await bcrypt.hash(data.password, 8);
+
+  const userData = {
+    password: hashedPassword,
+    email: data.patient.email,
+    role: UserRole.PATIENT,
+  };
+
+  const result = await prisma.$transaction(async (transectionClient) => {
+    const createUser = await transectionClient.user.create({
+      data: userData,
+    });
+
+    const createPatient = await transectionClient.patient.create({
+      data: data.patient,
+    });
+    return createPatient;
+  });
+
+  return result;
+};
+
 export const userServices = {
   createAdmin,
   createDoctor,
+  createPatient,
 };
