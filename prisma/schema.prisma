@@ -43,6 +43,31 @@ model Admin {
   @@map("admins")
 }
 
+model Doctor {
+  id                  String   @id @default(uuid())
+  name                String
+  email               String   @unique
+  profilePhoto        String?
+  contactNumber       String
+  address             String?
+  registrationNumber  String
+  experience          Int      @default(0)
+  gender              Gender
+  appoinmentFee       Int
+  qualification       String
+  currentWorkingPlace String
+  designation         String
+  isDeleted           Boolean
+  averageRatting      Float
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt()
+}
+
+enum Gender {
+  MALE
+  FEMALE
+}
+
 enum UserRole {
   SUPER_ADMIN
   ADMIN
