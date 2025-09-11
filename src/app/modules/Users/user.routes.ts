@@ -8,6 +8,12 @@ const router = express.Router();
 
 router.get("/", auth("ADMIN", "SUPER_ADMIN"), userController.getAllUsers);
 
+router.patch(
+  "/:id/status",
+  auth("ADMIN", "SUPER_ADMIN"),
+  userController.updateUserStatus
+);
+
 router.post(
   "/create-admin",
   auth("ADMIN", "SUPER_ADMIN"),

@@ -55,10 +55,26 @@ const getAllUsers = catchAsync(
     });
   }
 );
+const updateUserStatus = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const result = await userServices.updateUserStatus(
+      req.params.id!,
+      req.body
+    );
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "User Status updated successfully",
+      data: result,
+    });
+  }
+);
 
 export const userController = {
   createAdmin,
   createDoctor,
   createPatient,
   getAllUsers,
+  updateUserStatus,
 };
