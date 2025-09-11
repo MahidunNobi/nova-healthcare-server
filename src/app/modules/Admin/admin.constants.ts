@@ -1,7 +1,7 @@
-export const filterableFields = [
+export const adminFilterableFields = [
   "name",
   "email",
   "searchTerm",
   "contactNumber",
 ];
-export const searchAbleFieldsForSearchTerm = ["name", "email"];
+export const adminSearchableForSearchTerm = ["name", "email"];

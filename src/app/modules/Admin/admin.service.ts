@@ -1,5 +1,5 @@
 import { Admin, Prisma, UserStatus } from "@prisma/client";
-import { searchAbleFieldsForSearchTerm } from "./admin.constants";
+import { adminSearchableForSearchTerm } from "./admin.constants";
 import paginationHelper from "../../../shared/paginationHelper";
 import prisma from "../../../shared/prismaClient";
 import { IFilterTypes } from "./admin.interface";
@@ -13,7 +13,7 @@ const getAllAdmins = async (params: IFilterTypes, options: IPagination) => {
 
   if (params.searchTerm) {
     andConditions.push({
-      OR: searchAbleFieldsForSearchTerm.map((field) => ({
+      OR: adminSearchableForSearchTerm.map((field) => ({
         [field]: {
           contains: params.searchTerm,
           mode: "insensitive",

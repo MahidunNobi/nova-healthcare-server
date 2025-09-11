@@ -1,13 +1,13 @@
 import { NextFunction, Request, RequestHandler, Response } from "express";
 import { adminServices } from "./admin.service";
 import pick from "../../../shared/pick";
-import { filterableFields } from "./admin.constants";
+import { adminFilterableFields } from "./admin.constants";
 import sendResponse from "../../../shared/sendResponse";
 import catchAsync from "../../../shared/catchAsync";
 
 const getAllAdmins = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const filter = req.query && pick(req.query, filterableFields);
+    const filter = req.query && pick(req.query, adminFilterableFields);
     const options =
       req.query && pick(req.query, ["page", "limit", "sortBy", "sortOrder"]);
 
