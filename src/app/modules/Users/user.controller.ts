@@ -65,7 +65,8 @@ const updateUserStatus = catchAsync(
     sendResponse(res, {
       statusCode: 200,
       success: true,
-      message: "User Status updated successfully",
+      message:
+        "User Status updated successfully. Only for admins and super admins",
       data: result,
     });
   }
