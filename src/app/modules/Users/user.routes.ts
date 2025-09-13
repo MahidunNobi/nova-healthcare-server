@@ -3,10 +3,17 @@ import { userController } from "./user.controller";
 import auth from "../../middlewares/auth";
 import { fileUploader } from "../../Helpers/fileUploader";
 import { userValidation } from "./user.validation";
+import { UserRole } from "@prisma/client";
 
 const router = express.Router();
 
 router.get("/", auth("ADMIN", "SUPER_ADMIN"), userController.getAllUsers);
+
+router.get(
+  "/me",
+  auth(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.DOCTOR, UserRole.PATIENT),
+  userController.getMyProfile
+);
 
 router.patch(
   "/:id/status",
