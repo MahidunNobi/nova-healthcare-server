@@ -1,6 +1,11 @@
 import { Doctor } from "@prisma/client";
 import prisma from "../../../shared/prismaClient";
 
+type specialtiesType = {
+  id: string;
+  isDeleted: boolean;
+};
+
 const getAllDoctors = async () => {
   const result = await prisma.doctor.findMany();
   return result;
@@ -8,7 +13,7 @@ const getAllDoctors = async () => {
 
 const updateDoctorById = async (
   id: string,
-  data: { specialties: string[] } & Partial<Doctor>
+  data: { specialties: specialtiesType[] } & Partial<Doctor>
 ): Promise<Doctor | null> => {
   // Check if the doctor exists of not
   const docInfo = await prisma.doctor.findUniqueOrThrow({
@@ -19,6 +24,17 @@ const updateDoctorById = async (
   });
 
   const { specialties, ...docData } = data;
+
+  const deleteSpecialties: specialtiesType[] = [];
+  const createSpecialties: specialtiesType[] = [];
+
+  for (const specialty of specialties) {
+    if (specialty.isDeleted) {
+      deleteSpecialties.push(specialty);
+    } else {
+      createSpecialties.push(specialty);
+    }
+  }
 
   const result = await prisma.$transaction(async (TC) => {
     const doctorUpdateData = await prisma.doctor.update({
@@ -32,14 +48,25 @@ const updateDoctorById = async (
       },
     });
 
-    for (const id of specialties) {
-      await prisma.doctorSpecialties.create({
-        data: {
-          specialitiesId: id,
+    // Deleting  specialities
+    for (const specility of deleteSpecialties) {
+      await TC.doctorSpecialties.deleteMany({
+        where: {
+          specialitiesId: specility.id,
           doctorId: docInfo.id,
         },
       });
     }
+    // Creating  specialities
+    for (const specility of createSpecialties) {
+      await TC.doctorSpecialties.create({
+        data: {
+          specialitiesId: specility.id,
+          doctorId: docInfo.id,
+        },
+      });
+    }
+
     return doctorUpdateData;
   });
 
