@@ -36,8 +36,9 @@ const updateDoctorById = async (
     }
   }
 
-  const result = await prisma.$transaction(async (TC) => {
-    const doctorUpdateData = await prisma.doctor.update({
+  // Working on Database
+  await prisma.$transaction(async (TC) => {
+    await prisma.doctor.update({
       where: {
         id,
         isDeleted: false,
@@ -66,8 +67,19 @@ const updateDoctorById = async (
         },
       });
     }
+  });
 
-    return doctorUpdateData;
+  const result = await prisma.doctor.findUnique({
+    where: {
+      id,
+    },
+    include: {
+      DoctorSpecialties: {
+        include: {
+          specialties: true,
+        },
+      },
+    },
   });
 
   return result;
