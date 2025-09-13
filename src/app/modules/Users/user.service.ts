@@ -211,14 +211,22 @@ const getMyProfile = async (userData: { email: string; role: string }) => {
 
 const updateMyProfile = async (
   userData: { email: string; role: string },
-  payload: Partial<Admin | Doctor | Patient>
+  req: Request
 ) => {
   const user = await prisma.user.findUniqueOrThrow({
     where: {
       email: userData.email,
     },
   });
-  console.log(userData, payload);
+
+  // Uploading Profile picture
+  const file = req.file;
+  if (file) {
+    const imageData: void | UploadApiResponse =
+      await fileUploader.uploadToCloudinary(file);
+    req.body.profilePhoto = imageData?.secure_url;
+  }
+
   let profileData;
   if (
     userData.role === UserRole.ADMIN ||
@@ -226,21 +234,21 @@ const updateMyProfile = async (
   ) {
     profileData = await prisma.admin.update({
       where: { email: user.email },
-      data: payload,
+      data: req.body,
     });
   } else if (userData.role === UserRole.DOCTOR) {
     profileData = await prisma.doctor.update({
       where: { email: user.email },
-      data: payload,
+      data: req.body,
     });
   } else if (userData.role === UserRole.PATIENT) {
     profileData = await prisma.patient.update({
       where: { email: user.email },
-      data: payload,
+      data: req.body,
     });
   }
 
-  return { ...profileData };
+  return profileData;
 };
 
 export const userServices = {
