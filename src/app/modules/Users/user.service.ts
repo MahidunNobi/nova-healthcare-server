@@ -14,6 +14,8 @@ import { Request } from "express";
 import { IPagination } from "../../interfaces/pagination";
 import paginationHelper from "../../../shared/paginationHelper";
 import { UserSearchableFieldsForSearchTerm } from "./user.constants";
+import { IAuthUser } from "../../interfaces/common";
+import ApiError from "../../errors/apiError";
 
 const createAdmin = async (req: Request) => {
   const file = req.file;
@@ -176,7 +178,8 @@ const updateUserStatus = async (id: string, status: UserStatus) => {
   return updateUserStatus;
 };
 
-const getMyProfile = async (userData: { email: string; role: string }) => {
+const getMyProfile = async (userData: IAuthUser | undefined) => {
+  if (!userData) throw new ApiError(400, "Payload user not found");
   const user = await prisma.user.findUniqueOrThrow({
     where: {
       email: userData.email,
@@ -210,12 +213,13 @@ const getMyProfile = async (userData: { email: string; role: string }) => {
 };
 
 const updateMyProfile = async (
-  userData: { email: string; role: string },
+  userData: IAuthUser | undefined,
   req: Request
 ) => {
+  if (!userData) throw new ApiError(400, "Payload user not found");
   const user = await prisma.user.findUniqueOrThrow({
     where: {
-      email: userData.email,
+      email: userData?.email,
     },
   });
 

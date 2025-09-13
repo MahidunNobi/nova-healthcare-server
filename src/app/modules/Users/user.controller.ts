@@ -4,6 +4,7 @@ import catchAsync from "../../../shared/catchAsync";
 import pick from "../../../shared/pick";
 import { patientFilterableFields } from "./user.constants";
 import sendResponse from "../../../shared/sendResponse";
+import { IAuthUser } from "../../interfaces/common";
 
 const createAdmin = async (req: Request, res: Response) => {
   try {
@@ -74,8 +75,12 @@ const updateUserStatus = catchAsync(
 );
 
 const getMyProfile = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
-    const result = await userServices.getMyProfile(req.user);
+  async (
+    req: Request & { user?: IAuthUser },
+    res: Response,
+    next: NextFunction
+  ) => {
+    const result = await userServices.getMyProfile(req?.user);
 
     sendResponse(res, {
       statusCode: 200,
@@ -87,9 +92,13 @@ const getMyProfile = catchAsync(
 );
 
 const updateMyProfile = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+  async (
+    req: Request & { user?: IAuthUser },
+    res: Response,
+    next: NextFunction
+  ) => {
     // console.log(req.body);
-    const result = await userServices.updateMyProfile(req.user, req);
+    const result = await userServices.updateMyProfile(req?.user, req);
 
     sendResponse(res, {
       statusCode: 200,
