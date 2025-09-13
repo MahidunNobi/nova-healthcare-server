@@ -15,12 +15,6 @@ router.get(
   userController.getMyProfile
 );
 
-router.patch(
-  "/:id/status",
-  auth("ADMIN", "SUPER_ADMIN"),
-  userController.updateUserStatus
-);
-
 router.post(
   "/create-admin",
   auth("ADMIN", "SUPER_ADMIN"),
@@ -48,6 +42,22 @@ router.post(
   (req: Request, res: Response, next: NextFunction) => {
     req.body = userValidation.createPatient.parse(JSON.parse(req.body.data));
     return userController.createPatient(req, res, next);
+  }
+);
+
+router.patch(
+  "/:id/status",
+  auth("ADMIN", "SUPER_ADMIN"),
+  userController.updateUserStatus
+);
+
+router.patch(
+  "/update-my-profile",
+  auth(UserRole.SUPER_ADMIN, UserRole.ADMIN, UserRole.DOCTOR, UserRole.PATIENT),
+  fileUploader.upload.single("file"),
+  (req: Request, res: Response, next: NextFunction) => {
+    req.body = JSON.parse(req.body.data);
+    return userController.updateMyProfile(req, res, next);
   }
 );
 

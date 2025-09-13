@@ -57,6 +57,7 @@ const getAllUsers = catchAsync(
 );
 const updateUserStatus = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
+    console.log(req.body);
     const result = await userServices.updateUserStatus(
       req.params.id!,
       req.body
@@ -74,12 +75,26 @@ const updateUserStatus = catchAsync(
 
 const getMyProfile = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const result = await userServices.getMyProfile(req);
+    const result = await userServices.getMyProfile(req.user);
 
     sendResponse(res, {
       statusCode: 200,
       success: true,
       message: "Data fetched successfully!",
+      data: result,
+    });
+  }
+);
+
+const updateMyProfile = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    // console.log(req.body);
+    const result = await userServices.updateMyProfile(req.user, req.body);
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Profile updated successfully!",
       data: result,
     });
   }
@@ -92,4 +107,5 @@ export const userController = {
   getAllUsers,
   updateUserStatus,
   getMyProfile,
+  updateMyProfile,
 };
