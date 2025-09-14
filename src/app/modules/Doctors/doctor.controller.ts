@@ -25,7 +25,7 @@ const updateDoctorById = catchAsync(
     sendResponse(res, {
       statusCode: 200,
       success: true,
-      message: "Doctor Updated successfully!",
+      message: "Doctor Updated successfully!!",
       data: result,
     });
   }
