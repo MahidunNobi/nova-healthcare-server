@@ -2,10 +2,16 @@ import { NextFunction, Request, Response } from "express";
 import catchAsync from "../../../shared/catchAsync";
 import { doctorServices } from "./doctor.service";
 import sendResponse from "../../../shared/sendResponse";
+import pick from "../../../shared/pick";
+import { doctorFilterableFields } from "./doctor.constants";
 
 const getAllDoctors = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const result = await doctorServices.getAllDoctors();
+    const filter = req.query && pick(req.query, doctorFilterableFields);
+    const options =
+      req.query && pick(req.query, ["page", "limit", "sortBy", "sortOrder"]);
+
+    const result = await doctorServices.getAllDoctors(filter, options);
 
     sendResponse(res, {
       statusCode: 200,

@@ -6,7 +6,6 @@ import { IFilterTypes } from "./admin.interface";
 import { IPagination } from "../../interfaces/pagination";
 
 const getAllAdmins = async (params: IFilterTypes, options: IPagination) => {
-  console.log(options);
   const andConditions: Prisma.AdminWhereInput[] = [];
   const { searchTerm, ...filterData } = params;
   const { page, limit, skip, sortBy, sortOrder } = paginationHelper(options);
