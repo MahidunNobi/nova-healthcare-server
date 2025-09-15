@@ -22,6 +22,23 @@ const getAllDoctors = catchAsync(
   }
 );
 
+const updatePatientById = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const result = await patientService.updatePatientById(
+      req.params.id!,
+      req.body
+    );
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Patients data updated.",
+      data: result,
+    });
+  }
+);
+
 export const patientController = {
   getAllDoctors,
+  updatePatientById,
 };

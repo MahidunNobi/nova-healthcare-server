@@ -62,6 +62,21 @@ const getAllPatients = async (params: any, options: any) => {
   };
 };
 
+const updatePatientById = async (id: string, payload: any) => {
+  const result = await prisma.patient.update({
+    where: {
+      id,
+    },
+    data: payload,
+    include: {
+      PatientHealthData: true,
+      MedicalReport: true,
+    },
+  });
+  return result;
+};
+
 export const patientService = {
   getAllPatients,
+  updatePatientById,
 };
