@@ -13,7 +13,7 @@ const getAllDoctors = async (params: any, options: any) => {
   // return result;
 
   const andConditions: Prisma.DoctorWhereInput[] = [];
-  const { searchTerm, ...filterData } = params;
+  const { searchTerm, specialties, ...filterData } = params;
   const { page, limit, skip, sortBy, sortOrder } = paginationHelper(options);
 
   if (params.searchTerm) {
@@ -36,6 +36,22 @@ const getAllDoctors = async (params: any, options: any) => {
       })),
     });
   }
+
+  if (specialties && specialties.length > 0) {
+    andConditions.push({
+      DoctorSpecialties: {
+        some: {
+          specialties: {
+            title: {
+              contains: specialties,
+              mode: "insensitive",
+            },
+          },
+        },
+      },
+    });
+  }
+
   andConditions.push({
     isDeleted: false,
   });
@@ -47,6 +63,13 @@ const getAllDoctors = async (params: any, options: any) => {
     take: limit,
     orderBy: {
       [sortBy]: sortOrder,
+    },
+    include: {
+      DoctorSpecialties: {
+        include: {
+          specialties: true,
+        },
+      },
     },
   });
   const total = await prisma.doctor.count({
