@@ -84,7 +84,7 @@ const updatePatientById = async (id: string, payload: any) => {
       },
     });
     console.log(id);
-    //   update patientHealthData
+    //   update Patient Health Data
     if (patientHealthData) {
       await Tc.patientHealthData.upsert({
         where: { patientId: id },
