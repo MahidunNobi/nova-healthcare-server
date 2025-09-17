@@ -68,6 +68,7 @@ const updatePatientById = async (id: string, payload: any) => {
   const patientInfo = await prisma.patient.findUniqueOrThrow({
     where: {
       id,
+      isDeleted: false,
     },
   });
 
@@ -155,8 +156,22 @@ const deletePatientById = async (id: string) => {
   return result;
 };
 
+const softDeletePatientById = async (id: string) => {
+  await prisma.patient.findUniqueOrThrow({
+    where: {
+      id,
+    },
+  });
+
+  await prisma.patient.update({
+    where: { id },
+    data: { isDeleted: true },
+  });
+};
+
 export const patientService = {
   getAllPatients,
   updatePatientById,
   deletePatientById,
+  softDeletePatientById,
 };
