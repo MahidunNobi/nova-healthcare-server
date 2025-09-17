@@ -12,9 +12,15 @@ const createSchedule = async (payload: any) => {
   const slotInterval = 30;
 
   while (firstDate <= lastDate) {
-    const firstDateTime = addHours(firstDate, Number(startTime.split(":")[0]));
+    const firstDateTime = addMinutes(
+      addHours(firstDate, Number(startTime.split(":")[0])),
+      Number(startTime.split(":")[1])
+    );
 
-    const lastDateTime = addHours(firstDate, Number(endTime.split(":")[0]));
+    const lastDateTime = addMinutes(
+      addHours(firstDate, Number(endTime.split(":")[0])),
+      Number(endTime.split(":")[1])
+    );
 
     while (firstDateTime < lastDateTime) {
       const schedule = {
