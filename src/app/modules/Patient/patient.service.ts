@@ -113,7 +113,50 @@ const updatePatientById = async (id: string, payload: any) => {
   return result;
 };
 
+const deletePatientById = async (id: string) => {
+  await prisma.patient.findUniqueOrThrow({
+    where: {
+      id,
+    },
+  });
+
+  const result = await prisma.$transaction(async (Tc) => {
+    // delete Medical Record
+    await Tc.medicalReport.deleteMany({
+      where: {
+        patientId: id,
+      },
+    });
+
+    // Delete Patient Health Data
+    await Tc.patientHealthData.delete({
+      where: {
+        patientId: id,
+      },
+    });
+
+    // Delete Patient Data
+    const deletedPatient = await Tc.patient.delete({
+      where: {
+        id,
+      },
+    });
+
+    // Delete User
+    await Tc.user.delete({
+      where: {
+        email: deletedPatient.email,
+      },
+    });
+
+    return deletedPatient;
+  });
+
+  return result;
+};
+
 export const patientService = {
   getAllPatients,
   updatePatientById,
+  deletePatientById,
 };
