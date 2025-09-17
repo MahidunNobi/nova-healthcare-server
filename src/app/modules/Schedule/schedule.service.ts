@@ -28,11 +28,19 @@ const createSchedule = async (payload: any) => {
         endDateTime: addMinutes(firstDateTime, slotInterval),
       };
 
-      const result = await prisma.schedule.create({
-        data: schedule,
+      const existingSchedule = await prisma.schedule.findFirst({
+        where: {
+          ...schedule,
+        },
       });
 
-      allSchedules.push(result);
+      if (!existingSchedule) {
+        const result = await prisma.schedule.create({
+          data: schedule,
+        });
+
+        allSchedules.push(result);
+      }
 
       firstDateTime.setTime(firstDateTime.getTime() + slotInterval * 60 * 1000);
     }
