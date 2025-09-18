@@ -30,6 +30,7 @@ const getAllDoctors = catchAsync(
     });
   }
 );
+
 const createSchedule = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const result = await scheduleService.createSchedule(req.body);
