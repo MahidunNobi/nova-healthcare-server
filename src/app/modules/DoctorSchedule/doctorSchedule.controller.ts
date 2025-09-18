@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import catchAsync from "../../../shared/catchAsync";
-import { scheduleService } from "./doctorSchedule.service";
+import { doctorScheduleService } from "./doctorSchedule.service";
 import sendResponse from "../../../shared/sendResponse";
 import { IAuthUser } from "../../interfaces/common";
 import pick from "../../../shared/pick";
@@ -17,7 +17,7 @@ const getMySchedule = catchAsync(
     const options =
       req.query && pick(req.query, ["page", "limit", "sortBy", "sortOrder"]);
 
-    const result = await scheduleService.getMySchedules(
+    const result = await doctorScheduleService.getMySchedules(
       filter,
       options,
       req.user!
@@ -39,7 +39,10 @@ const createDoctorSchedule = catchAsync(
     next: NextFunction
   ) => {
     const user = req.user;
-    const result = await scheduleService.createDoctorSchedule(user!, req.body);
+    const result = await doctorScheduleService.createDoctorSchedule(
+      user!,
+      req.body
+    );
 
     sendResponse(res, {
       statusCode: 200,
@@ -50,7 +53,28 @@ const createDoctorSchedule = catchAsync(
   }
 );
 
-export const scheduleController = {
+const deleteDoctorSchedule = catchAsync(
+  async (
+    req: Request & { user?: IAuthUser },
+    res: Response,
+    next: NextFunction
+  ) => {
+    const result = await doctorScheduleService.deleteMySchedule(
+      req.user!,
+      req.params.id!
+    );
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Doctor Schedule Deleted successfully",
+      data: result,
+    });
+  }
+);
+
+export const doctorScheduleController = {
   createDoctorSchedule,
   getMySchedule,
+  deleteDoctorSchedule,
 };

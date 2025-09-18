@@ -3,6 +3,7 @@ import prisma from "../../../shared/prismaClient";
 import { IPagination } from "../../interfaces/pagination";
 import { Prisma } from "@prisma/client";
 import paginationHelper from "../../../shared/paginationHelper";
+import ApiError from "../../errors/apiError";
 
 const getMySchedules = async (
   params: any,
@@ -94,7 +95,38 @@ const createDoctorSchedule = async (user: IAuthUser, payload: any) => {
   return result;
 };
 
-export const scheduleService = {
+const deleteMySchedule = async (user: IAuthUser, scheduleId: string) => {
+  const doctor = await prisma.doctor.findUniqueOrThrow({
+    where: {
+      email: user?.email!,
+    },
+  });
+
+  const bookedSchedule = await prisma.doctorSchedules.findFirst({
+    where: {
+      scheduleId,
+      doctorId: doctor.id,
+      isBooked: true,
+    },
+  });
+
+  if (bookedSchedule) {
+    throw new ApiError(400, "Cannot delete the  schedule because it's booked.");
+  }
+
+  const result = await prisma.doctorSchedules.delete({
+    where: {
+      doctorId_scheduleId: {
+        doctorId: doctor.id,
+        scheduleId,
+      },
+    },
+  });
+  return result;
+};
+
+export const doctorScheduleService = {
   createDoctorSchedule,
   getMySchedules,
+  deleteMySchedule,
 };
