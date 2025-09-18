@@ -2,25 +2,40 @@ import { addHours, addMinutes } from "date-fns";
 import prisma from "../../../shared/prismaClient";
 import { Prisma } from "@prisma/client";
 import paginationHelper from "../../../shared/paginationHelper";
+import { IAuthUser } from "../../interfaces/common";
 
-const getAllSchedules = async (params: any, options: any) => {
-  // const result = await prisma.doctor.findMany();
-  // return result;
-
+const getAllSchedules = async (params: any, options: any, user: IAuthUser) => {
   const andConditions: Prisma.ScheduleWhereInput[] = [];
-  const { searchTerm, ...filterData } = params;
+  const { startDateTime, endDateTime } = params;
   const { page, limit, skip, sortBy, sortOrder } = paginationHelper(options);
 
-  if (Object.keys(filterData).length > 0) {
+  if (startDateTime && endDateTime) {
     andConditions.push({
-      AND: Object.keys(filterData).map((key) => ({
-        [key]: {
-          equals: (filterData as any)[key],
+      AND: [
+        {
+          startDateTime: {
+            gte: startDateTime,
+          },
         },
-      })),
+        {
+          endDateTime: {
+            lte: endDateTime,
+          },
+        },
+      ],
     });
   }
+
   const whereConditions = { AND: andConditions };
+
+  const doctorSchedules = await prisma.doctorSchedules.findMany({
+    where: {
+      doctor: {
+        email: user?.email || "",
+      },
+    },
+  });
+  console.log(doctorSchedules);
 
   const result = await prisma.schedule.findMany({
     where: whereConditions,
