@@ -4,10 +4,11 @@ import { Prisma } from "@prisma/client";
 import paginationHelper from "../../../shared/paginationHelper";
 import { IAuthUser } from "../../interfaces/common";
 import { IScheduleFilterParams } from "./schedule.interface";
+import { IPagination } from "../../interfaces/pagination";
 
 const getAllSchedules = async (
   params: IScheduleFilterParams,
-  options: any,
+  options: IPagination,
   user: IAuthUser
 ) => {
   const andConditions: Prisma.ScheduleWhereInput[] = [];
