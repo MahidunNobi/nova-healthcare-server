@@ -2,7 +2,25 @@ import { NextFunction, Request, Response } from "express";
 import catchAsync from "../../../shared/catchAsync";
 import { scheduleService } from "./schedule.service";
 import sendResponse from "../../../shared/sendResponse";
+import pick from "../../../shared/pick";
+import { scheduleFilterableFields } from "./schedule.constants";
 
+const getAllDoctors = catchAsync(
+  async (req: Request, res: Response, next: NextFunction) => {
+    const filter = req.query && pick(req.query, scheduleFilterableFields);
+    const options =
+      req.query && pick(req.query, ["page", "limit", "sortBy", "sortOrder"]);
+
+    const result = await scheduleService.getAllSchedules(filter, options);
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Schedules data fetched.",
+      data: result,
+    });
+  }
+);
 const createSchedule = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const result = await scheduleService.createSchedule(req.body);
@@ -18,4 +36,5 @@ const createSchedule = catchAsync(
 
 export const scheduleController = {
   createSchedule,
+  getAllDoctors,
 };

@@ -3,6 +3,8 @@ import { scheduleController } from "./schedule.controller";
 
 const router = Router();
 
+router.get("/", scheduleController.getAllDoctors);
+
 router.post("/", scheduleController.createSchedule);
 
 export const scheduleRoutes = router;
