@@ -53,6 +53,16 @@ const createAppoinment = async (user: IAuthUser, payload: any) => {
       },
     });
 
+    const transectionId = uuidv4();
+
+    await tx.payment.create({
+      data: {
+        appointmentId: appointmentData.id,
+        amount: Number(doctorInfo.appoinmentFee),
+        transactionId: transectionId,
+      },
+    });
+
     return appointmentData;
   });
 
