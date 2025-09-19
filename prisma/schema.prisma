@@ -155,7 +155,7 @@ model Schedule {
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt()
   DoctorSchedules DoctorSchedules[]
-  Appointment     Appointment[]
+  Appointment     Appointment?
 
   @@map("schedules")
 }
@@ -181,7 +181,7 @@ model Appointment {
   doctorId String
   doctor   Doctor @relation(fields: [doctorId], references: [id])
 
-  scheduleId String
+  scheduleId String   @unique
   schedule   Schedule @relation(fields: [scheduleId], references: [id])
 
   videoCallingId String
