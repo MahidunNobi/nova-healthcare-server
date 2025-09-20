@@ -18,7 +18,7 @@ const createSchedule = catchAsync(
     sendResponse(res, {
       statusCode: 200,
       success: true,
-      message: "Appointment created successfully",
+      message: "Appointment created successfully!",
       data: result,
     });
   }
