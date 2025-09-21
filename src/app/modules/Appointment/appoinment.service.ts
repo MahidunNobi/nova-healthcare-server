@@ -1,6 +1,33 @@
 import prisma from "../../../shared/prismaClient";
 import { IAuthUser } from "../../interfaces/common";
 import { v4 as uuidv4 } from "uuid";
+import { IPagination } from "../../interfaces/pagination";
+import { Prisma } from "@prisma/client";
+import paginationHelper from "../../../shared/paginationHelper";
+
+const getAllAppointments = async (
+  filters: any,
+  options: IPagination,
+  user: IAuthUser
+) => {
+  const andConditions: Prisma.ScheduleWhereInput[] = [];
+  const { startDateTime, endDateTime } = filters;
+  const { page, limit, skip, sortBy, sortOrder } = paginationHelper(options);
+  console.log(filters, options, user);
+  const whereConditions = { AND: andConditions };
+
+  const result = await prisma.appointment.findMany({});
+
+  const total = await prisma.schedule.count({});
+  return {
+    meta: {
+      page,
+      limit,
+      total,
+    },
+    data: result,
+  };
+};
 
 const createAppoinment = async (user: IAuthUser, payload: any) => {
   const patientInfo = await prisma.patient.findUniqueOrThrow({
@@ -71,4 +98,5 @@ const createAppoinment = async (user: IAuthUser, payload: any) => {
 
 export const appoinmentService = {
   createAppoinment,
+  getAllAppointments,
 };
