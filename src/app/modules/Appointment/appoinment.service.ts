@@ -2,7 +2,7 @@ import prisma from "../../../shared/prismaClient";
 import { IAuthUser } from "../../interfaces/common";
 import { v4 as uuidv4 } from "uuid";
 import { IPagination } from "../../interfaces/pagination";
-import { Prisma } from "@prisma/client";
+import { Prisma, UserRole } from "@prisma/client";
 import paginationHelper from "../../../shared/paginationHelper";
 
 const getAllAppointments = async (
@@ -10,15 +10,47 @@ const getAllAppointments = async (
   options: IPagination,
   user: IAuthUser
 ) => {
-  const andConditions: Prisma.ScheduleWhereInput[] = [];
-  const { startDateTime, endDateTime } = filters;
+  const andConditions: Prisma.AppointmentWhereInput[] = [];
+  const { ...filterData } = filters;
   const { page, limit, skip, sortBy, sortOrder } = paginationHelper(options);
-  console.log(filters, options, user);
+
+  if (user?.role == UserRole.PATIENT) {
+    andConditions.push({
+      patient: {
+        email: user.email,
+      },
+    });
+  } else if (user?.role == UserRole.DOCTOR) {
+    andConditions.push({
+      doctor: {
+        email: user.email,
+      },
+    });
+  }
+
+  if (Object.keys(filterData).length > 0) {
+    andConditions.push({
+      AND: Object.keys(filterData).map((key) => ({
+        [key]: {
+          equals: (filterData as any)[key],
+        },
+      })),
+    });
+  }
+
   const whereConditions = { AND: andConditions };
+  const result = await prisma.appointment.findMany({
+    where: whereConditions,
+    skip,
+    take: limit,
+    orderBy: {
+      [sortBy]: sortOrder,
+    },
+  });
 
-  const result = await prisma.appointment.findMany({});
-
-  const total = await prisma.schedule.count({});
+  const total = await prisma.appointment.count({
+    where: whereConditions,
+  });
   return {
     meta: {
       page,
