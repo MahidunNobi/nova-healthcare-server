@@ -1,8 +1,9 @@
 import axios from "axios";
 import config from "../../../config";
 import ApiError from "../../errors/apiError";
+import { IAppointmentData } from "./ssl.interface";
 
-const initPayment = async (appointmentData: any) => {
+const initPayment = async (appointmentData: IAppointmentData) => {
   const data = {
     store_id: config.ssl.store_id,
     store_passwd: config.ssl.store_pass,
