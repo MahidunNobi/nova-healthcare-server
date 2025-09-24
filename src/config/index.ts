@@ -8,6 +8,8 @@ export default {
     jwt_secret: process.env.JWT_SECRET,
   },
   reset_password_url: process.env.RESET_PASS_URL,
+  delete_unpaid_appointments_in:
+    process.env.DELETE_UNPAID_APPOINTMENTS_IN_MINUTES,
   email_sender: {
     email: process.env.EMAIL,
     app_pass: process.env.APP_PASS,

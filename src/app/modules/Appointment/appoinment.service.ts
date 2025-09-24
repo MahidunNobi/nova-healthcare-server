@@ -11,6 +11,7 @@ import {
 import paginationHelper from "../../../shared/paginationHelper";
 import app from "../../../app";
 import ApiError from "../../errors/apiError";
+import config from "../../../config";
 
 const getAllAppointments = async (
   filters: any,
@@ -169,7 +170,9 @@ const updateAppointmentStatus = async (
 };
 
 const cancelUnpaidAppointments = async () => {
-  const thirtyMinutesAgo = new Date(Date.now() - 1 * 60 * 1000);
+  const thirtyMinutesAgo = new Date(
+    Date.now() - Number(config.delete_unpaid_appointments_in) * 60 * 1000
+  );
 
   const unpaidAppointments = await prisma.appointment.findMany({
     where: {
@@ -215,8 +218,6 @@ const cancelUnpaidAppointments = async () => {
         },
       });
     }
-
-    console.log("Updated");
   });
 };
 
