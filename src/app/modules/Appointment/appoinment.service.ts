@@ -180,9 +180,44 @@ const cancelUnpaidAppointments = async () => {
     },
   });
 
-  const ids = unpaidAppointments.map((ap) => ap.id);
+  const deleteAppointmentIds = unpaidAppointments.map((ap) => ap.id);
 
-  console.log(ids);
+  await prisma.$transaction(async (tx) => {
+    // Delete payments
+    await tx.payment.deleteMany({
+      where: {
+        appointmentId: {
+          in: deleteAppointmentIds,
+        },
+      },
+    });
+
+    // Delete appointment
+    await tx.appointment.deleteMany({
+      where: {
+        id: {
+          in: deleteAppointmentIds,
+        },
+      },
+    });
+
+    // Update Schedule
+    for (const appointment of unpaidAppointments) {
+      await tx.doctorSchedules.update({
+        where: {
+          doctorId_scheduleId: {
+            doctorId: appointment.doctorId,
+            scheduleId: appointment.scheduleId,
+          },
+        },
+        data: {
+          isBooked: false,
+        },
+      });
+    }
+
+    console.log("Updated");
+  });
 };
 
 export const appoinmentService = {
