@@ -2,7 +2,12 @@ import prisma from "../../../shared/prismaClient";
 import { IAuthUser } from "../../interfaces/common";
 import { v4 as uuidv4 } from "uuid";
 import { IPagination } from "../../interfaces/pagination";
-import { AppointmentStatus, Prisma, UserRole } from "@prisma/client";
+import {
+  AppointmentStatus,
+  PaymentStatus,
+  Prisma,
+  UserRole,
+} from "@prisma/client";
 import paginationHelper from "../../../shared/paginationHelper";
 import app from "../../../app";
 import ApiError from "../../errors/apiError";
@@ -163,8 +168,26 @@ const updateAppointmentStatus = async (
   return result;
 };
 
+const cancelUnpaidAppointments = async () => {
+  const thirtyMinutesAgo = new Date(Date.now() - 1 * 60 * 1000);
+
+  const unpaidAppointments = await prisma.appointment.findMany({
+    where: {
+      createdAt: {
+        lte: thirtyMinutesAgo,
+      },
+      paymentStatus: PaymentStatus.UNPAID,
+    },
+  });
+
+  const ids = unpaidAppointments.map((ap) => ap.id);
+
+  console.log(ids);
+};
+
 export const appoinmentService = {
   createAppoinment,
   getAllAppointments,
   updateAppointmentStatus,
+  cancelUnpaidAppointments,
 };
