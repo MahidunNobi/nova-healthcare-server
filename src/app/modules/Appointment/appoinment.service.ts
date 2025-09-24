@@ -5,6 +5,7 @@ import { IPagination } from "../../interfaces/pagination";
 import { AppointmentStatus, Prisma, UserRole } from "@prisma/client";
 import paginationHelper from "../../../shared/paginationHelper";
 import app from "../../../app";
+import ApiError from "../../errors/apiError";
 
 const getAllAppointments = async (
   filters: any,
@@ -131,13 +132,24 @@ const createAppoinment = async (user: IAuthUser, payload: any) => {
 
 const updateAppointmentStatus = async (
   appointmentId: string,
-  status: AppointmentStatus
+  status: AppointmentStatus,
+  user: IAuthUser
 ) => {
   const appointmentData = await prisma.appointment.findUniqueOrThrow({
     where: {
       id: appointmentId,
     },
+    include: {
+      doctor: true,
+    },
   });
+
+  if (
+    user?.role == UserRole.DOCTOR &&
+    user.email !== appointmentData.doctor.email
+  ) {
+    throw new ApiError(400, "This is not your appointment!");
+  }
 
   const result = await prisma.appointment.update({
     where: {

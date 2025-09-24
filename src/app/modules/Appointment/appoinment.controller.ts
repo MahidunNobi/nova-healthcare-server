@@ -59,7 +59,8 @@ const updateAppointmentStatus = catchAsync(
   ) => {
     const result = await appoinmentService.updateAppointmentStatus(
       req.params.id!,
-      req.body.status
+      req.body.status,
+      req.user!
     );
 
     sendResponse(res, {
