@@ -2,8 +2,9 @@ import prisma from "../../../shared/prismaClient";
 import { IAuthUser } from "../../interfaces/common";
 import { v4 as uuidv4 } from "uuid";
 import { IPagination } from "../../interfaces/pagination";
-import { Prisma, UserRole } from "@prisma/client";
+import { AppointmentStatus, Prisma, UserRole } from "@prisma/client";
 import paginationHelper from "../../../shared/paginationHelper";
+import app from "../../../app";
 
 const getAllAppointments = async (
   filters: any,
@@ -128,7 +129,30 @@ const createAppoinment = async (user: IAuthUser, payload: any) => {
   return result;
 };
 
+const updateAppointmentStatus = async (
+  appointmentId: string,
+  status: AppointmentStatus
+) => {
+  const appointmentData = await prisma.appointment.findUniqueOrThrow({
+    where: {
+      id: appointmentId,
+    },
+  });
+
+  const result = await prisma.appointment.update({
+    where: {
+      id: appointmentId,
+    },
+    data: {
+      status,
+    },
+  });
+
+  return result;
+};
+
 export const appoinmentService = {
   createAppoinment,
   getAllAppointments,
+  updateAppointmentStatus,
 };

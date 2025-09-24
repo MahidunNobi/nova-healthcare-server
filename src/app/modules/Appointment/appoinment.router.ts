@@ -13,4 +13,6 @@ router.get(
 
 router.post("/", auth(UserRole.PATIENT), appointmentController.createSchedule);
 
+router.patch("/status/:id", appointmentController.updateAppointmentStatus);
+
 export const appointmentRoutes = router;

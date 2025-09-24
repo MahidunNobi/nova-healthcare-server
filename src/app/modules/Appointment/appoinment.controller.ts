@@ -51,7 +51,28 @@ const createSchedule = catchAsync(
   }
 );
 
+const updateAppointmentStatus = catchAsync(
+  async (
+    req: Request & { user?: IAuthUser },
+    res: Response,
+    next: NextFunction
+  ) => {
+    const result = await appoinmentService.updateAppointmentStatus(
+      req.params.id!,
+      req.body.status
+    );
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Appointment status updated successfully!",
+      data: result,
+    });
+  }
+);
+
 export const appointmentController = {
   createSchedule,
   getAllAppointments,
+  updateAppointmentStatus,
 };
