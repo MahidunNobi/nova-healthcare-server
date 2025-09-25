@@ -18,7 +18,6 @@ const createReview = async (user: IAuthUser, payload: any) => {
   if (patientData.id !== appointmentData.patientId) {
     throw new ApiError(400, "This is not your appointment!");
   }
-
   const result = await prisma.review.create({
     data: {
       appointmentId: appointmentData.id,
@@ -27,6 +26,26 @@ const createReview = async (user: IAuthUser, payload: any) => {
       rating: payload.rating,
       comment: payload.comment,
     },
+  });
+
+  // calculate doctors avg ratting
+  await prisma.$transaction(async (tx) => {
+    const averageRatting = await tx.review.aggregate({
+      _avg: {
+        rating: true,
+      },
+    });
+
+    await tx.doctor.update({
+      where: {
+        id: appointmentData.doctorId,
+      },
+      data: {
+        averageRatting: averageRatting._avg.rating || 0,
+      },
+    });
+
+    console.log(averageRatting);
   });
 
   return result;
