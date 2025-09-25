@@ -53,6 +53,10 @@ const moduleRoutes = [
     path: "/payment",
     routes: paymentRoutes,
   },
+  {
+    path: "/prescription",
+    routes: paymentRoutes,
+  },
 ];
 
 moduleRoutes.map((route) => router.use(route.path, route.routes));
