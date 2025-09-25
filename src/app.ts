@@ -6,6 +6,7 @@ import router from "./app/Routes";
 import globalErrorHandler from "./app/middlewares/globalErrorHandler";
 import cookieParser from "cookie-parser";
 import { appoinmentService } from "./app/modules/Appointment/appoinment.service";
+import cron from "node-cron";
 
 const app = express();
 
@@ -19,7 +20,10 @@ app.use(cookieParser());
 app.get("/", (req: Request, res: Response) => {
   res.send(" Nova Health Care Server .......");
 });
-appoinmentService.cancelUnpaidAppointments();
+
+cron.schedule("* * * * *", () => {
+  appoinmentService.cancelUnpaidAppointments();
+});
 
 app.use("/api/v1", router);
 
