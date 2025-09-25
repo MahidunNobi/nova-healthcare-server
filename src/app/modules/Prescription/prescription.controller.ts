@@ -24,6 +24,24 @@ const createPrescription = catchAsync(
   }
 );
 
+const getMyPrescription = catchAsync(
+  async (
+    req: Request & { user?: IAuthUser },
+    res: Response,
+    next: NextFunction
+  ) => {
+    const result = await prescriptionService.getMyPrescription(req.user!);
+
+    sendResponse(res, {
+      statusCode: 200,
+      success: true,
+      message: "Prescription retrived successfully!",
+      data: result,
+    });
+  }
+);
+
 export const prescriptionController = {
   createPrescription,
+  getMyPrescription,
 };

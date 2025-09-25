@@ -31,6 +31,18 @@ const createPrescription = async (user: IAuthUser, payload: any) => {
   return result;
 };
 
+const getMyPrescription = async (user: IAuthUser) => {
+  const result = await prisma.prescription.findMany({
+    where: {
+      patient: {
+        email: user?.email!,
+      },
+    },
+  });
+  return result;
+};
+
 export const prescriptionService = {
   createPrescription,
+  getMyPrescription,
 };
