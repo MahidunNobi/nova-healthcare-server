@@ -44,8 +44,6 @@ const createReview = async (user: IAuthUser, payload: any) => {
         averageRatting: averageRatting._avg.rating || 0,
       },
     });
-
-    console.log(averageRatting);
   });
 
   return result;
