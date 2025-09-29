@@ -15,7 +15,7 @@ const getDashboardMetaData = catchAsync(
     sendResponse(res, {
       statusCode: 200,
       success: true,
-      message: "Dashboard fetched successfully!",
+      message: "Dashboard fetched successfully! Yeaa",
       data: result,
     });
   }
